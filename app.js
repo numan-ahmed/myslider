@@ -23,7 +23,7 @@ const showImages = (images) => {
     let div = document.createElement('div');
     div.className = 'col-lg-3 col-md-4 col-xs-6 img-item mb-2';
     div.innerHTML = ` <img class="img-fluid img-thumbnail" onclick=selectItem(event,"${image.webformatURL}") src="${image.webformatURL}" alt="${image.tags}">`;
-    gallery.appendChild(div)
+    gallery.appendChild(div);
   })
 
 }
@@ -31,20 +31,36 @@ const showImages = (images) => {
 const getImages = (query) => {
   fetch(`https://pixabay.com/api/?key=${KEY}=${query}&image_type=photo&pretty=true`)
     .then(response => response.json())
-    .then(data => showImages(data.hitS))
+    .then(data => showImages(data.hits))
+    //  .then(data => console.log(data))
     .catch(err => console.log(err))
 }
+
+// enter Keyboard key
+document.getElementById("search")
+
+    .addEventListener("keypress", function(event) {
+    if (event.key === 'Enter'){
+        document.getElementById("search-btn").click();
+    }   
+});
+
+
 
 let slideIndex = 0;
 const selectItem = (event, img) => {
   let element = event.target;
   element.classList.add('added');
- 
+
   let item = sliders.indexOf(img);
   if (item === -1) {
     sliders.push(img);
   } else {
-    alert('Hey, Already added !')
+    
+    element.classList.remove('added');
+    element.remove(img);
+     sliders.pop(img);
+
   }
 }
 var timer
@@ -68,14 +84,21 @@ const createSlider = () => {
   // hide image aria
   imagesArea.style.display = 'none';
   const duration = document.getElementById('duration').value || 1000;
-  sliders.forEach(slide => {
-    let item = document.createElement('div')
-    item.className = "slider-item";
-    item.innerHTML = `<img class="w-100"
-    src="${slide}"
-    alt="">`;
-    sliderContainer.appendChild(item)
-  })
+  if (duration < 0) {
+   alert('duration time cannot be negative value');
+       
+  } else {
+      sliders.forEach(slide => {
+      let item = document.createElement('div')
+      item.className = "slider-item";
+      item.innerHTML = `<img class="w-100"
+      src="${slide}"
+      alt="">`;
+      sliderContainer.appendChild(item)
+    })
+
+  }
+
   changeSlide(0)
   timer = setInterval(function () {
     slideIndex++;
